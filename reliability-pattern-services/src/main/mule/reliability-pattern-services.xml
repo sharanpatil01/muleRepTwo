@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eaf2b1f4-1bb7-4c44-be51-e515003822db" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="506f02b8-26df-4365-97af-d1cd0cab20ee">
+		<vm:connection />
+		<vm:queues >
+			<vm:queue queueName="reliableVM" />
+		</vm:queues>
+	</vm:config>
+	<flow name="reliability-pattern-services-non-transactional-flow" doc:id="21a73f15-eb73-4d57-9ae7-2b441a5e3555" >
+		<http:listener doc:name="Listener /reliable" doc:id="e2e3be16-f24b-4337-82fd-84920c863118" config-ref="HTTP_Listener_config" path="reliable"/>
+		<vm:publish doc:name="Publish" doc:id="3b7d5624-bbbb-4584-b6c7-f832d55e7cb5" config-ref="VM_Config" queueName="reliableVM"/>
+	</flow>
+	<flow name="reliability-pattern-services-transactional-flow" doc:id="d04d0a2c-9638-4d87-a04f-aaae139cfa43" >
+		<vm:listener doc:name="Listener" doc:id="ff17233c-5e92-4fe9-9334-5373a0ec89a5" config-ref="VM_Config" queueName="reliableVM"/>
+		<logger level="INFO" doc:name="DB Insert - 1" doc:id="7ae1ce81-2937-45c5-9d7c-a9eb976662c5" message="inserting in db1"/>
+		<logger level="INFO" doc:name="DB Insert - 2" doc:id="ca931cd1-1cb9-4e24-a7e6-0bb5402cd829" message="inserting into db2"/>
+	</flow>
+</mule>

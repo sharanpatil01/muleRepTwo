@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain:mule-domain
+        xmlns:db="http://www.mulesoft.org/schema/mule/db"
+        xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+        xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+        xmlns:http="http://www.mulesoft.org/schema/mule/http"
+        xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:domain="http://www.mulesoft.org/schema/mule/ee/domain" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/ee/domain http://www.mulesoft.org/schema/mule/ee/domain/current/mule-domain-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config_domain1" doc:name="HTTP Listener config" doc:id="c28b29e4-3e16-4de1-89bd-4c53e42311f2" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="87009bc2-fb42-4db6-8ea8-6e51ab2b1f00" name="env" value="dev" />
+	<configuration-properties doc:name="Configuration properties" doc:id="d76459bd-3e10-420f-8196-b2e39024479c" file="mule-app-config-${env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="8f9f7e97-c17c-467a-b434-b661f696a6e1" file="secure-mule-app-config-${env}.yaml" />
+	<http:request-config name="HTTP_Request_Random_config_domain" doc:name="HTTP Request configuration" doc:id="dd545820-78a8-4f7f-99ae-f7f41187fd40" basePath="/api/v1" >
+		<http:request-connection protocol="HTTPS" host="random-generator-app.herokuapp.com" />
+	</http:request-config>
+	<validation:config name="Validation_Config_domain1" doc:name="Validation Config" doc:id="50f261d5-b4b6-472e-9140-a603d4cd0118" />
+	<vm:config name="VM_Config_domain1" doc:name="VM Config" doc:id="51ffb014-d667-40bd-b0d0-7c22d88dfd50">
+		<vm:queues >
+			<vm:queue queueName="vmq1" />
+		</vm:queues>
+	</vm:config>
+	<http:request-config name="HTTP_Request_config_domain1_localhost8081" doc:name="HTTP Request configuration" doc:id="9b40d150-2bef-411b-9f1e-f5f6dd3551e7" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+
+
+    <!-- configure here resource to be shared within the domain -->
+
+</domain:mule-domain>

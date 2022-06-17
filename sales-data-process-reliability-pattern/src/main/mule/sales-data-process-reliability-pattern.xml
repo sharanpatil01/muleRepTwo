@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="e088422c-c6b6-41d4-9f24-8010852c486e" />
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="f74f53fa-fab4-4c84-b6f9-2a96fd508700" >
+		<jms:active-mq-connection >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="sales-data-process-reliability-pattern-file-read-publish2Q-flow" doc:id="073ee2db-9b1d-4305-9fac-a6684abdbe9d" >
+		<file:listener doc:name="On New or Updated File" doc:id="6c9f7d66-fbf1-421b-9a3a-29ff328fb49c" config-ref="File_Config" directory="C:\srnp\data\input\sales" moveToDirectory="C:\srnp\data\input\archive" timeBetweenSizeCheckUnit="HOURS" recursive="false">
+			<scheduling-strategy >
+				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="initialize vars" doc:id="ac85b2cd-62f7-4238-b6ba-7c0eeebc4d0a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="starttime" ><![CDATA[%dw 2.0
+output application/java
+import * from dw::util::Timer
+---
+currentMilliseconds()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0ef8e3b4-2bf8-4da3-b9b9-3ba6a7dcd9a6" message='#[output application/json&#10;---&#10;{&#10;"sizeof(payload)"	:  sizeOf(payload),&#10;"starttime": vars.starttime&#10;}]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="66589f9c-4d76-45c5-ac4b-8a38816335a8" message="#[output application/json &#10;--- &#10;message.attributes]"/>
+		<parallel-foreach doc:name="For Each" doc:id="f4f7f37e-d6ec-4c7b-a299-aab4fab1b33d" collection="#[payload]">
+			<set-payload value='#[output application/json&#10;---&#10;{"sno": vars.counter} ++ payload[0]]' doc:name="Set Payload" doc:id="ab12a783-fdd5-475d-897f-b9a2a3d897b6" />
+<!-- [STUDIO:"Logger"]			<logger level="INFO" doc:name="Logger" doc:id="214b7806-9028-4910-8f2f-56f0d062f59c" message='#[{"activity_type": "publishing__" ++ payload.sno  as String default "" }[0]]' /> [STUDIO] -->
+			<jms:publish doc:name="Publish" doc:id="7035669b-6094-4c5b-8b53-5c4d6bdb209a" config-ref="JMS_Config" destination="salesQ" sendCorrelationId="ALWAYS" timeToLiveUnit="MICROSECONDS" persistentDelivery="true">
+			</jms:publish>
+		</parallel-foreach>
+		<ee:transform doc:name="Transform Message" doc:id="2fae89a6-6193-4755-97e8-1070ab391ffe" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="endtime" ><![CDATA[%dw 2.0
+output application/java
+import * from dw::util::Timer
+---
+currentMilliseconds()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e2a6e85d-b7e9-45b3-8039-bf38c13523c5" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="processtimetaken" ><![CDATA[%dw 2.0
+import * from dw::util::Timer
+output application/json
+---
+{
+"starttime": vars.starttime,
+"endtime": currentMilliseconds() ,
+"time_taken": (vars.endtime - vars.starttime),
+"time_taken": (vars.endtime - vars.starttime)/1000
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6e7ac29a-a818-4825-b540-5df28bbe7063" message="================Completed============ time taken :  #[vars.processtimetaken]"/>
+	</flow>
+	
+	
+	
+	
+	
+	<flow name="sales-data-process-reliability-pattern-jms-on-new-message-flow" doc:id="d416249c-1cb5-4cb1-9cb3-6703ff7e7e8a">
+		<jms:listener doc:name="On New Message" doc:id="9eb1447c-cccc-48d1-801c-8ec5c4ae9805" config-ref="JMS_Config" destination="salesQ">
+			<reconnect />
+		</jms:listener>
+		
+		
+		<logger level="INFO" doc:name="Logger" doc:id="c64c1769-744a-4569-8f34-5fd78eb7f3a8" message='#[{"activity_type": "consuming__" ++ payload.sno as String default "" }[0]]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="c02296cf-7054-4b19-a7c9-edacc6f3afd5" message="#[message]"/>
+	
+	</flow>
+</mule>

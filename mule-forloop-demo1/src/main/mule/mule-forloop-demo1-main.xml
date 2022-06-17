@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+
+
+
+	<flow name="mule-forloop-demo-main-http-flow" doc:id="894378c3-a5eb-4c3e-8579-770b7305d949">
+		<http:listener doc:name="/forloop" config-ref="HTTP_Listener_config_domain1" path="/forloop"/>
+		
+		<set-payload value="#[[5,10,15,20]]" doc:name="[5,10,15,20]" />
+		
+		<set-variable value="1" doc:name="count = 1"  variableName="count"/>
+		
+		
+		<foreach doc:name="For Each"  collection="#[payload]">
+		
+			<set-payload value='#["Request"  ++ payload]' doc:name='"Req" ++ payload'   />
+			
+			<set-variable value="#[vars.count as Number + 1]" doc:name="count+1"   variableName="count"/>
+			
+			<logger level="INFO" doc:name="Logger" message="#[[payload, vars.count]]"/>
+			
+		</foreach>
+	
+		<logger level="INFO" doc:name="Logger" message="#[[message.payload, vars.count]]"/>
+		
+	</flow>
+	<flow name="mule-forloop-demo1-scheduler-flow" doc:id="74551878-b687-4e85-8856-4dbd634eb423" >
+		<scheduler doc:name="Scheduler" doc:id="6f4effdd-314c-4d46-bbc0-57fb00d9d5a6" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="30000" startDelay="2000"/>
+			</scheduling-strategy>
+		</scheduler>
+		<flow-ref doc:name="forloop-ex-http-flow" doc:id="7f1bad95-cf4e-4100-9a14-84b19b06741b" name="mule-forloop-demo-main-http-flow"/>
+	</flow>
+	
+</mule>
