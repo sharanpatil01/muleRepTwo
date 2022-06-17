@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="initiate-system-api-call" doc:id="b51f3bb1-5474-4d3e-950e-227b01e767c9" >
+		<logger level="INFO" doc:name="Logger" doc:id="e19254df-6c53-4732-aaca-719b247b1d20" message="#[payload]"/>
+		<set-variable value="#[attributes.name]" doc:name="Set Variable" doc:id="074fae5c-2b8e-4fd3-a7cd-1cebfdc57aec" variableName="fileext"/>
+		<foreach doc:name="For Each" doc:id="346edbc4-e958-4c00-b1df-b0f2f69222c1" >
+			<logger level="INFO" doc:name="Logger" doc:id="4f1961da-be8b-48ef-a8d8-0ff960c53b99" message="#[payload]"/>
+			<ee:transform doc:name="Transform Message" doc:id="e904ac51-7b3c-4ca3-afad-4bada3429c6c" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun replaces(aString) = aString replace '"' with ''
+---
+payload map()  -> ({
+	"id": replaces($.sno as String default "-100"),
+	"fname": $.fname default "fnu",
+	"lname": $.lname default "lnu"
+})]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="91f58931-fe93-4e8d-b78c-23c655499157" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"timestamp": "2022-06-18T00:20:00",
+	"outputinfo": "Internal server error",
+	"additionalInfo": "Internal server error"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

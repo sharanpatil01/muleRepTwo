@@ -1,0 +1,39 @@
+#%RAML 1.0
+baseUri: http://localhost:8081/api
+
+title: Process csv file
+description: System API to process the given csv file
+version: 1.0.0
+
+
+/data:
+  post:
+    body:
+      application/json:
+        example:  |
+          {
+            "Employee" : [
+              {
+                "id": 101,
+                "fname": "Ankur",
+                "lname": "Jyoti",
+                "email": "aj@email.com",
+                "DOB":  "22/02/2000",
+                "DOJ":  "22/02/2022",
+                "salary": 50000.00
+              }
+            ]
+            }
+    responses:
+      200:
+        description: return the status of operation
+        body:
+          application/json:
+            examples:
+              VALID_FILE_CONTENT: |
+                {
+                  "timestamp":  "2022-01-01T00:00:00",
+                  "outputinfo": "VALID",
+                  "additionalInfo": "Successfully validated the file content"
+                  }
+

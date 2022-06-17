@@ -1,0 +1,7 @@
+%dw 2.0
+
+type auto_10d88290_8d39_47e4_bc3a_30cb7708caa9_Input_Payload = {|
+  VALID: String, 
+  INVALID: String
+|}
+

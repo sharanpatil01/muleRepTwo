@@ -1,0 +1,69 @@
+#%RAML 1.0
+baseUri: http://localhost:8081/api
+
+title: emp-csv export experienc-api
+version: 1.0.0
+
+/file:
+  post:
+    body:
+      multipart/form-data:
+        description: 'contains the document in attachment'
+        properties:
+          file:
+            description: 'csv actual file'
+            required: true
+            type: file
+    responses:
+      200:        
+        description: return the status of operation
+        body:
+          application/json:
+            example:
+              VALID:  |
+                {
+                  "timestamp": "2022-06-18T00:10:10",
+                  "outputinfo": "VALID",
+                  "additionalInfo": "Successfully validated and stored the data"
+                }
+              INVALID:  |
+                {
+                  "timestamp": "2022-06-18T00:10:10",
+                  "outputinfo": "INVALID",
+                  "additionalInfo": "Invalid file content, please process again with valid data"
+                }
+                
+      400:
+        description: Bad Request
+        body:
+          application/json:
+            example:
+              bad_request:  |
+                {
+                  "timestamp": "2022-06-18T00:10:10",
+                  "outputinfo": "failed",
+                  "additionalInfo": "Bad request"
+                }
+      404:
+        description: Resource not found
+        body:
+          application/json:
+            example:
+              resource_not_found:  |
+                {
+                  "timestamp": "2022-06-18T00:10:10",
+                  "outputinfo": "failed",
+                  "additionalInfo": "Resource not found"
+                  }
+
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            example:
+              internal_server_error:  |
+                {
+                  "timestamp": "2022-06-18T00:10:10",
+                  "outputinfo": "failed",
+                  "additionalInfo": "Internal Server Error"
+                }

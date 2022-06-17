@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+
+	<sub-flow name="initiate-process-api-call" doc:id="10d88290-8d39-47e4-bc3a-30cb7708caa9">
+		<ee:transform doc:name="Transform Message" >
+			<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"timestamp": payload.timestamp,
+	"outputinfo":	payload.outputinfo default "",
+	"additionalInfo":	"additional-info"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+		<choice>
+			<when expression="#[payload.outputinfo == 'VALID']">
+				<logger level="INFO" doc:name="Logger" doc:id="c142d70b-0a97-4ed0-8a82-6b46a2878b55" message="#[payload]"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="c18c1fff-021d-4ce9-84d6-ec689ecb4781" message="#[payload]"/>
+			</otherwise>
+		</choice>
+		
+	</sub-flow>
+</mule>

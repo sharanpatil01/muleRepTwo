@@ -1,0 +1,82 @@
+#%RAML 1.0
+baseUri: http://localhost:8081/api
+
+
+title: Process API for csv file process
+
+description:  Process API to process the given csv file
+version: 1.0.0
+
+
+/document:
+  post:
+    body:
+      multipart/form-data:
+        description: contains the document in attachment
+        properties:
+          metadata:
+            description: the metadata describing the content
+            required: false
+            type: string
+    responses:
+      200:
+        description:  return the status of operation
+        body:
+          application/json:
+            examples:
+              VALID_FILE_NAME:  |
+                {
+                  "timestamp": "2022-06-18T00:20:00",
+                  "outputinfo": "VALID",
+                  "additionalInfo": "Successfully validated the file name"
+                  }
+              INVALID_FILE_NAME:  |
+                {
+                  "timestamp": "2022-06-18T00:20:00",
+                  "outputinfo": "INVALID",
+                  "additionalInfo": "invalid file name, please provide valid file name"
+                  }
+
+      400:
+        description: Bad request
+        body:
+          application/json:
+            example:
+              bad_request:  |
+                {
+                  "timestamp": "2022-06-18T00:20:00",
+                  "outputinfo": "bad request",
+                  "additionalInfo": "Bad Request!"
+                  }
+      404:
+        description: resource not found
+        body:
+          application/json:
+            example:
+              resource_not_found: |
+                {
+                  "timestamp": "2022-06-18T00:20:00",
+                  "outputinfo": "resource-not-found",
+                  "additionalInfo": "Resource not found"
+                  }
+      500:
+        description: Internal server error 
+        body:
+          application/json:
+            example:
+              internal_server_error: |
+                {
+                  "timestamp": "2022-06-18T00:20:00",
+                  "outputinfo": "Internal server error",
+                  "additionalInfo": "Internal server error"
+                  }
+        
+
+
+
+
+
+
+
+
+

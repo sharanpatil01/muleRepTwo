@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="process-system-call" doc:id="e8256cb8-3635-45da-b763-8fe6103cf062" >
+		<logger level="INFO" doc:name="log csv validated row" doc:id="35330ea3-0cfe-4124-a065-d00f1bed361a" message="#[payload]"/>
+		<logger level="INFO" doc:name="insert into emp table" doc:id="a0780ce9-44ec-4714-9645-e7a59de79f02" message="Success: insert into emp table"/>
+	</sub-flow>
+</mule>
