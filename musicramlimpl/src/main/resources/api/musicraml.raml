@@ -1,0 +1,36 @@
+#%RAML 1.0
+title: musicRaml
+
+types:
+  Records: !include recordsDataType.raml
+
+
+/records:
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            type: Records
+            example:
+              music: 
+                collection: "Deep Collection"
+                artists: 
+                  artist1: "Deep Purple"
+                  artist2: "Rainbow"
+                  
+                  
+
+/bank:
+  get:
+    queryParameters:
+      accnum:
+        type: string
+        required: true
+        example: "1001012345"
+      name:
+        type: string
+        required: false
+        example: ishiqa
+          
+
