@@ -1,0 +1,7 @@
+#%RAML 1.0 NamedExample
+id: "123"
+fname: "sharada"
+lname: "biradar"
+emailid: "myadd@email.com"
+dob: "10-01-2000"
+      

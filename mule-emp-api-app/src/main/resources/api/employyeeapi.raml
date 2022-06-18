@@ -1,0 +1,41 @@
+#%RAML 1.0
+title: EmpAPI
+
+baseUri: http://localhost:8081
+
+protocols:
+  - HTTP
+
+types:
+  EmpType:  !include EmpType.raml
+
+/emp:
+  post:
+    body:
+      application/json:
+        type: EmpType 
+    responses:
+      201:
+        body:
+          application/json:
+            example: {"message": "Employee created!!!!"}
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            examples: !include emp-type-examples.raml
+      404:
+        body:
+          application/json:
+            example: {"message": "Resource Not Found"}
+  /{id}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include emp-type-example.yaml
+
+
+            
